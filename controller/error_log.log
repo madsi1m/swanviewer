@@ -1,0 +1,76 @@
+Traceback (most recent call last):
+  File "/var/www/html/core/apps/swanviewer/controller/input_hack.py", line 6, in <module>
+    import nbformat
+ImportError: No module named nbformat
+Traceback (most recent call last):
+  File "/var/www/html/core/apps/swanviewer/controller/input_hack.py", line 6, in <module>
+    import nbformat
+ImportError: No module named nbformat
+Traceback (most recent call last):
+  File "/var/www/html/core/apps/swanviewer/controller/input_hack.py", line 14, in <module>
+    fileContent = u''.join((fileContent, unicode(line, 'utf-8')))
+NameError: name 'unicode' is not defined
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")
+/usr/lib/python3.3/site-packages/nbconvert/filters/highlight.py:130: UserWarning: IPython lexer unavailable, falling back on Python
+  warn("IPython lexer unavailable, falling back on Python")

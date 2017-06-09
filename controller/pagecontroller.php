@@ -1,0 +1,113 @@
+<?php
+/**
+ * ownCloud - swanviewer
+ *
+ * This file is licensed under the Affero General Public License version 3 or
+ * later. See the COPYING file.
+ *
+ * @author Hugo Gonzalez Labrador (CERN) <hugo.gonzalez.labrador@cern.ch>
+ * @copyright Hugo Gonzalez Labrador (CERN) 2017
+ */
+
+namespace OCA\SwanViewer\Controller;
+
+use OCP\IRequest;
+use OCP\AppFramework\Http\TemplateResponse;
+use OCP\AppFramework\Http\DataResponse;
+use OCP\AppFramework\Controller;
+use OC\Files\ObjectStore\EosProxy;
+use OC\Files\ObjectStore\EosUtil;
+
+class PageController extends Controller {
+
+
+	private $userId;
+	private $swanUrl;
+	private $pythonLib;
+	private $pythonBin;
+	private $inputHack;
+	private $eosUtil;
+
+	public function __construct($AppName, IRequest $request, $UserId){
+		parent::__construct($AppName, $request);
+		$this->swanUrl= \OC::$server->getConfig()->getSystemValue("cbox.swan.url", "https://cern.ch/swanserver/cgi-bin/go"); 
+		$this->pythonLib = \OC::$server->getConfig()->getSystemValue("cbox.swan.pythonlib", "/opt/rh/python27/root/usr/lib64"); 
+		$this->pythonBin = \OC::$server->getConfig()->getSystemValue("cbox.swan.pythonbin", "/opt/rh/python27/root/usr/bin/python"); 
+		$this->inputHack = \OC::$server->getConfig()->getSystemValue("cbox.swan.inputhack", "./input_hack.py"); 
+		$this->userId = $UserId;
+		$this->eosUtil = \OC::$server->getCernBoxEosUtil();
+	}
+
+	/**
+	 * @PublicPage
+	 */
+	public function doConfig() {
+		return new DataResponse(['swanurl' => $this->swanUrl]);
+	}
+
+	public function doEosinfo($filename) {
+		if(!$this->userId) {
+			return new DataResponse(['error' => 'user is not logged in']);
+		}
+
+		list($uid, $gid) = $this->eosUtil->getUidAndGidForUsername($this->userId);
+		if(!$uid || !$gid) {
+			return new DataResponse(['error' => 'user does not have valid uid/gid']);
+		}
+
+		$node = \OC::$server->getUserFolder($this->userId)->get($filename);
+		if(!$node) {
+			return new DataResponse(['error' => 'file does not exists']);
+		}
+		
+		$info = $node->stat();
+		return new DataResponse(['eosinfo' => $info]);
+	} 
+
+	public function doLoad($filename) {
+		if(!$this->userId) {
+			return new DataResponse(['error' => 'user is not logged in']);
+		}
+
+		list($uid, $gid) = $this->eosUtil->getUidAndGidForUsername($this->userId);
+		if(!$uid || !$gid) {
+			return new DataResponse(['error' => 'user does not have valid uid/gid']);
+		}
+
+		$node = \OC::$server->getUserFolder($this->userId)->get($filename);
+		if(!$node) {
+			return new DataResponse(['error' => 'file does not exists']);
+		}
+
+		$info = $node->stat();
+		// TODO(labkode): check for file size limit maybe?
+		
+		$content = $node->getContent();
+
+		// Convert notebook
+		$descriptorspec = array(
+		   0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
+		   1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
+		   2 => array("file", dirname($this->inputHack) . '/error_log.log', "a") // write logs here
+		);
+
+		$pipes = [];
+		$returnValue = 0;
+
+		$process = proc_open(sprintf("%s %s", $this->pythonBin, $this->inputHack), $descriptorspec, $pipes, NULL, ['LD_LIBRARY_PATH' => $this->pythonLib]);
+		fwrite($pipes[0], $content);
+		fclose($pipes[0]);
+
+		$result = stream_get_contents($pipes[1]);
+		fclose($pipes[1]);
+
+		$returnValue = proc_close($process);
+		if($returnValue === 0) {
+			return new DataResponse(['data' => ["content" => $result]]);
+		} else {
+			\OCP\Util::writeLog('files_nbviewer', 'Error while converting notebook. Return code: ' .$returnValue, \OCP\Util::ERROR);
+			return new DataResponse(['error' => 'error converting the notebook']);
+		}
+		return;
+	}
+}
