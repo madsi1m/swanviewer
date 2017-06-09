@@ -23,3 +23,9 @@ html_exporter.template_file = 'full' # basic html to be embeded in CERNBox
 
 print(bytes.decode(body.encode('ascii', 'ignore')))
 
+
+# INSTALLATION:
+# yum install -y python34 python34-pip
+# scl enable python34 bash
+# pip3 install ipython[notebook]
+
