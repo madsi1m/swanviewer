@@ -58,6 +58,9 @@
 	};
 
 	var onView = function(filename, data) {
+		if(isPublicPage()) {
+			return onViewPublic(filename, data, getSharingToken());
+		}
 		url = OC.generateUrl('/apps/swanviewer/load');
 		filename = data.dir + "/" + filename;
 		$.get(url, {filename: filename}).success(function (response) {
@@ -74,9 +77,41 @@
 		});
 	};
 
+	var onViewPublic = function(filename, data, token) {
+		console.log(filename, data, token);
+		url = OC.generateUrl('/apps/swanviewer/publicload');
+		$.get(url, {filename: filename, token: token}).success(function (response) {
+			if(response.data) {
+				setUpEditor();
+				$('#nbviewer-loader').remove();
+				var iFrame = $('#nbviewer-frame');
+				var doc = iFrame[0].contentDocument || iFrame[0].contentWindow.document;
+				doc.write(response.data.content);
+				doc.close();
+			} else {
+				alert(response.error);
+			}
+		});
+	};
+
+	var onViewPublicSingleFile = function(token) {
+		url = OC.generateUrl('/apps/swanviewer/publicload');
+		$.get(url, {token: token}).success(function (response) {
+			if(response.data) {
+				setUpEditor();
+				$('#nbviewer-loader').remove();
+				var iFrame = $('#nbviewer-frame');
+				var doc = iFrame[0].contentDocument || iFrame[0].contentWindow.document;
+				doc.write(response.data.content);
+				doc.close();
+			} else {
+				alert(response.error);
+			}
+		});
+	};
+
 	function closeFile(callback) {
-		if(isNotebookOpen)
-		{
+		if(isNotebookOpen) {
 			$('#nbviewer').remove();
 			$('#app-navigation').show();
 			$('#app-content').show();
@@ -88,9 +123,10 @@
 		}
 	}
 
-	function setUpEditor(closeCallBack) {
+	function setUpEditor(closeCallBack, publicLinkRender) {
 		isNotebookOpen =  true;
 		var mainDiv = $('#nbviewer');
+
 		if(mainDiv.length < 1)
 		{
 			mainDiv = $('<div id="nbviewer"></div>');
@@ -110,7 +146,12 @@
 			frame.css('height', '100%');
 
 			mainDiv.append(frame);
-			$('#content').append(mainDiv);
+			if(publicLinkRender) {
+				$('#preview').append(mainDiv);
+			} else {
+				$('#content').append(mainDiv);
+			}
+
 			//$(document.body).append(mainDiv);
 		}
 
@@ -148,36 +189,6 @@
 	}
 
 
-	function loadFile(file, dir) {
-		var url = OC.filePath('files_nbviewer', 'ajax', 'loadfile.php') + "?file=" + encodeURIComponent(file)
-			+ "&dir=" + encodeURIComponent(dir) + "&requesttoken=" + encodeURIComponent(oc_requesttoken);
-
-		if($('#isPublic').attr('value') == '1')
-		{
-			url = url + "&token=" + encodeURIComponent($('#sharingToken').attr('value'));
-		}
-
-		$.get(url).done(function(result)
-		{
-			if(result.status === 'success')
-			{
-				$('#nbviewer-loader').remove();
-				var iFrame = $('#nbviewer-frame');
-		    var doc = iFrame[0].contentDocument || iFrame[0].contentWindow.document;
-		    doc.write(result.data.content);
-		    doc.close();
-			}
-			else
-			{
-				window.alert('There was a problem when loading your notebook: ' + result.data.message);
-				closeFile();
-			}
-		});
-	}
-
-
-
-
 	$(document).ready(function () {
 		loadConfig();
 		if (OCA && OCA.Files) {
@@ -185,6 +196,13 @@
 			OCA.Files.fileActions.register('application/pynb', 'Default View', OC.PERMISSION_READ, OC.imagePath('core', 'actions/play'), onView);
 
 			OCA.Files.fileActions.setDefault('application/pynb', 'Default View');
+		}
+		// Doesn't work with IE below 9
+		if(!$.browser.msie || ($.browser.msie && $.browser.version >= 9)){
+			if ($('#isPublic').val() && $('#mimetype').val() === 'application/pynb') {
+				var sharingToken = $('#sharingToken').val();
+				onViewPublicSingleFile(sharingToken);
+			}
 		}
 	});
 

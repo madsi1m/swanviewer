@@ -22,5 +22,6 @@ return [
 	   ['name' => 'page#do_config', 'url' => '/config', 'verb' => 'GET'],
 	   ['name' => 'page#do_eosinfo', 'url' => '/eosinfo', 'verb' => 'GET'],
 	   ['name' => 'page#do_load', 'url' => '/load', 'verb' => 'GET'],
+		['name' => 'page#do_public_load', 'url' => '/publicload', 'verb' => 'GET'],
     ]
 ];

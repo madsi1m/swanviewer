@@ -44,7 +44,10 @@ class PageController extends Controller {
 	public function doConfig() {
 		return new DataResponse(['swanurl' => $this->swanUrl]);
 	}
-
+	
+	/**
+	 * @NoAdminRequired
+	 */
 	public function doEosinfo($filename) {
 		if(!$this->userId) {
 			return new DataResponse(['error' => 'user is not logged in']);
@@ -64,6 +67,9 @@ class PageController extends Controller {
 		return new DataResponse(['eosinfo' => $info]);
 	} 
 
+	/**
+	 * @NoAdminRequired
+	 */
 	public function doLoad($filename) {
 		if(!$this->userId) {
 			return new DataResponse(['error' => 'user is not logged in']);
@@ -89,6 +95,60 @@ class PageController extends Controller {
 		   0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
 		   1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
 		   2 => array("file", dirname($this->inputHack) . '/error_log.log', "a") // write logs here
+		);
+
+		$pipes = [];
+		$returnValue = 0;
+
+		$process = proc_open(sprintf("%s %s", $this->pythonBin, $this->inputHack), $descriptorspec, $pipes, NULL, ['LD_LIBRARY_PATH' => $this->pythonLib]);
+		fwrite($pipes[0], $content);
+		fclose($pipes[0]);
+
+		$result = stream_get_contents($pipes[1]);
+		fclose($pipes[1]);
+
+		$returnValue = proc_close($process);
+		if($returnValue === 0) {
+			return new DataResponse(['data' => ["content" => $result]]);
+		} else {
+			\OCP\Util::writeLog('files_nbviewer', 'Error while converting notebook. Return code: ' .$returnValue, \OCP\Util::ERROR);
+			return new DataResponse(['error' => 'error converting the notebook']);
+		}
+		return;
+	}
+
+	/**
+	 * @PublicPage
+	 */
+	public function doPublicLoad($token, $filename) {
+		$share = \OC::$server->getShareManager()->getShareByToken($token);
+		if(!$share) {
+			return new DataResponse(['error' => 'invalid token']);
+		}
+		$owner = $share->getShareOwner();
+		list($uid, $gid) = $this->eosUtil->getUidAndGidForUsername($owner);
+		if(!$uid || !$gid) {
+			return new DataResponse(['error' => 'user does not have valid uid/gid']);
+		}
+
+		$node = $share->getNode();
+		if($node->getType() === \OCP\Files\FileInfo::TYPE_FOLDER) {
+			$node = $share->getNode()->get($filename);
+		}
+		if(!$node) {
+			return new DataResponse(['error' => 'file does not exists']);
+		}
+
+		$info = $node->stat();
+		// TODO(labkode): check for file size limit maybe?
+
+		$content = $node->getContent();
+
+		// Convert notebook
+		$descriptorspec = array(
+			0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
+			1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
+			2 => array("file", dirname($this->inputHack) . '/error_log.log', "a") // write logs here
 		);
 
 		$pipes = [];
