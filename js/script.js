@@ -199,9 +199,14 @@
 		}
 		// Doesn't work with IE below 9
 		if(!$.browser.msie || ($.browser.msie && $.browser.version >= 9)){
-			if ($('#isPublic').val() && $('#mimetype').val() === 'application/pynb') {
+			if ($('#isPublic').val() && $('#mimetype').val() === 'application/pynb' && $("input#passwordProtected").val() === "false") {
 				var sharingToken = $('#sharingToken').val();
 				onViewPublicSingleFile(sharingToken);
+				// add Open in SWAN button
+				var url = $("#downloadURL").val();
+				url = 'https://cern.ch/swanserver/cgi-bin/go?projurl=' + url;
+				var button = '<a href="' + url + '" target="_blank"><img class="svg" alt="" src="/apps/swanviewer/img//badge_swan_white_150.svg"></a>';
+				$('.directLink').parent().append($(button));
 			}
 		}
 	});
