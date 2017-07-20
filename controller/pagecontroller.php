@@ -31,7 +31,7 @@ class PageController extends Controller {
 	public function __construct($AppName, IRequest $request, $UserId){
 		parent::__construct($AppName, $request);
 		$this->swanUrl= \OC::$server->getConfig()->getSystemValue("cbox.swan.url", "https://cern.ch/swanserver/cgi-bin/go"); 
-		$this->pythonLib = \OC::$server->getConfig()->getSystemValue("cbox.swan.pythonlib", "/opt/rh/python27/root/usr/lib64"); 
+		$this->pythonLib = \OC::$server->getConfig()->getSystemValue("cbox.swan.pythonlib", "/opt/rh/python28/root/usr/lib64");
 		$this->pythonBin = \OC::$server->getConfig()->getSystemValue("cbox.swan.pythonbin", "/opt/rh/python27/root/usr/bin/python"); 
 		$this->inputHack = \OC::$server->getConfig()->getSystemValue("cbox.swan.inputhack", "./input_hack.py"); 
 		$this->userId = $UserId;
@@ -40,6 +40,7 @@ class PageController extends Controller {
 
 	/**
 	 * @PublicPage
+	 * @NoCSRFRequired
 	 */
 	public function doConfig() {
 		return new DataResponse(['swanurl' => $this->swanUrl]);
@@ -47,6 +48,7 @@ class PageController extends Controller {
 	
 	/**
 	 * @NoAdminRequired
+	 * @NoCSRFRequired
 	 */
 	public function doEosinfo($filename) {
 		if(!$this->userId) {
@@ -69,6 +71,7 @@ class PageController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 * @NoCSRFRequired
 	 */
 	public function doLoad($filename) {
 		if(!$this->userId) {
@@ -119,6 +122,7 @@ class PageController extends Controller {
 
 	/**
 	 * @PublicPage
+	 * @NoCSRFRequired
 	 */
 	public function doPublicLoad($token, $filename) {
 		$share = \OC::$server->getShareManager()->getShareByToken($token);

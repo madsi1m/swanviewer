@@ -63,9 +63,9 @@
 		}
 		url = OC.generateUrl('/apps/swanviewer/load');
 		filename = data.dir + "/" + filename;
+		setUpEditor();
 		$.get(url, {filename: filename}).success(function (response) {
 			if(response.data) {
-				setUpEditor();
 				$('#nbviewer-loader').remove();
 				var iFrame = $('#nbviewer-frame');
 				var doc = iFrame[0].contentDocument || iFrame[0].contentWindow.document;
@@ -78,11 +78,10 @@
 	};
 
 	var onViewPublic = function(filename, data, token) {
-		console.log(filename, data, token);
 		url = OC.generateUrl('/apps/swanviewer/publicload');
+		setUpEditor();
 		$.get(url, {filename: filename, token: token}).success(function (response) {
 			if(response.data) {
-				setUpEditor();
 				$('#nbviewer-loader').remove();
 				var iFrame = $('#nbviewer-frame');
 				var doc = iFrame[0].contentDocument || iFrame[0].contentWindow.document;
@@ -96,9 +95,9 @@
 
 	var onViewPublicSingleFile = function(token) {
 		url = OC.generateUrl('/apps/swanviewer/publicload');
+		setUpEditor();
 		$.get(url, {token: token}).success(function (response) {
 			if(response.data) {
-				setUpEditor();
 				$('#nbviewer-loader').remove();
 				var iFrame = $('#nbviewer-frame');
 				var doc = iFrame[0].contentDocument || iFrame[0].contentWindow.document;
