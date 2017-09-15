@@ -49,7 +49,7 @@
 			if(response.eosinfo) {
 				var info = response.eosinfo;
 				var eosPath = info['eos.file'];
-				var query = '?projurl=' + eosPath;
+				var query = '?projurl=file:/' + eosPath;
 				window.open(OCA.SwanViewer.swanUrl + query, '_blank');
 			} else {
 				alert("could not get info from eos");
