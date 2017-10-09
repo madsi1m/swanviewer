@@ -10,6 +10,6 @@
     <namespace>SwanViewer</namespace>
     <category>other</category>
     <dependencies>
-        <owncloud min-version="8.2" />
+        <owncloud min-version="8.2" max-version="11.0" />
     </dependencies>
 </info>
