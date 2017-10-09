@@ -1,3 +1,16 @@
-#hello {
-	color: red;
+.swanViewerCloseButton {
+    position: absolute;
+    top: 4px;
+    right: 20px;
+    width: auto;
+    height: auto;
+    z-index: 200;
+    background-color: #ffffff;
+}
+
+.swanViewerCloseButton img {
+    width: 24px;
+    border: 1px #888888 solid;
+    border-radius: 4px;
+    cursor: pointer;
 }

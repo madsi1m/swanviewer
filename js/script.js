@@ -52,7 +52,8 @@
 				var query = '?projurl=' + eosPath;
 				window.open(OCA.SwanViewer.swanUrl + query, '_blank');
 			} else {
-				alert("could not get info from eos");
+				closeFile(null);
+				OC.dialogs.alert("Error: Could not get info from eos", "Error");
 			}
 		});
 	};
@@ -72,7 +73,8 @@
 				doc.write(response.data.content);
 				doc.close();
 			} else {
-				alert(response.error);
+				closeFile(null);
+				OC.dialogs.alert(response.error, "Error");
 			}
 		});
 	};
@@ -88,7 +90,8 @@
 				doc.write(response.data.content);
 				doc.close();
 			} else {
-				alert(response.error);
+				closeFile(null);
+				OC.dialogs.alert(response.error, "Error");
 			}
 		});
 	};
@@ -104,7 +107,8 @@
 				doc.write(response.data.content);
 				doc.close();
 			} else {
-				alert(response.error);
+				closeFile(null);
+				OC.dialogs.alert(response.error, "Error");
 			}
 		});
 	};
@@ -166,13 +170,7 @@
 		loadingImg.append(imgContent);
 
 		var closeButton = $('<div></div>');
-		closeButton.css('position', 'absolute');
-		closeButton.css('top', '0');
-		closeButton.css('left', '95%');
-		closeButton.css('width', 'auto');
-		closeButton.css('height', 'auto');
-		closeButton.css('z-index', '200');
-		closeButton.css('background-color', '#f00');
+		closeButton.addClass('swanViewerCloseButton');
 		var closeImg = OC.imagePath('core', 'actions/close.svg');
 		var closeImgContent = $('<img></img>');
 		closeImgContent.attr('src', closeImg);
