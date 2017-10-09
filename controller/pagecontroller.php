@@ -35,7 +35,10 @@ class PageController extends Controller {
 		$this->pythonBin = \OC::$server->getConfig()->getSystemValue("cbox.swan.pythonbin", "/opt/rh/python27/root/usr/bin/python"); 
 		$this->inputHack = \OC::$server->getConfig()->getSystemValue("cbox.swan.inputhack", "./input_hack.py"); 
 		$this->userId = $UserId;
-		$this->eosUtil = \OC::$server->getCernBoxEosUtil();
+
+		if (method_exists(\OC::$server,'getCernBoxEosUtil')) {
+			$this->eosUtil = \OC::$server->getCernBoxEosUtil();
+		}
 	}
 
 	/**
@@ -55,9 +58,11 @@ class PageController extends Controller {
 			return new DataResponse(['error' => 'user is not logged in']);
 		}
 
-		list($uid, $gid) = $this->eosUtil->getUidAndGidForUsername($this->userId);
-		if(!$uid || !$gid) {
-			return new DataResponse(['error' => 'user does not have valid uid/gid']);
+		if ($this->eosUtil) {
+			list($uid, $gid) = $this->eosUtil->getUidAndGidForUsername($this->userId);
+			if(!$uid || !$gid) {
+				return new DataResponse(['error' => 'user does not have valid uid/gid']);
+			}
 		}
 
 		$node = \OC::$server->getUserFolder($this->userId)->get($filename);
@@ -78,9 +83,11 @@ class PageController extends Controller {
 			return new DataResponse(['error' => 'user is not logged in']);
 		}
 
-		list($uid, $gid) = $this->eosUtil->getUidAndGidForUsername($this->userId);
-		if(!$uid || !$gid) {
-			return new DataResponse(['error' => 'user does not have valid uid/gid']);
+		if ($this->eosUtil) {
+			list($uid, $gid) = $this->eosUtil->getUidAndGidForUsername($this->userId);
+			if(!$uid || !$gid) {
+				return new DataResponse(['error' => 'user does not have valid uid/gid']);
+			}
 		}
 
 		$node = \OC::$server->getUserFolder($this->userId)->get($filename);
@@ -97,7 +104,8 @@ class PageController extends Controller {
 		$descriptorspec = array(
 		   0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
 		   1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
-		   2 => array("file", dirname($this->inputHack) . '/error_log.log', "a") // write logs here
+		   //MD 2 => array("file", dirname($this->inputHack) . '/error_log.log', "a") // write logs here
+		   2 => array("pipe", "w") // error
 		);
 
 		$pipes = [];
@@ -109,6 +117,13 @@ class PageController extends Controller {
 
 		$result = stream_get_contents($pipes[1]);
 		fclose($pipes[1]);
+
+		//MD
+		$error = stream_get_contents($pipes[2]);
+		fclose($pipes[2]);
+		if ($error) {
+			\OCP\Util::writeLog('files_nbviewer', 'Python ERROR: ' .$error, \OCP\Util::ERROR);
+		}
 
 		$returnValue = proc_close($process);
 		if($returnValue === 0) {
@@ -129,10 +144,13 @@ class PageController extends Controller {
 		if(!$share) {
 			return new DataResponse(['error' => 'invalid token']);
 		}
-		$owner = $share->getShareOwner();
-		list($uid, $gid) = $this->eosUtil->getUidAndGidForUsername($owner);
-		if(!$uid || !$gid) {
-			return new DataResponse(['error' => 'user does not have valid uid/gid']);
+
+		if ($this->eosUtil) {
+			$owner = $share->getShareOwner();
+			list($uid, $gid) = $this->eosUtil->getUidAndGidForUsername($owner);
+			if(!$uid || !$gid) {
+				return new DataResponse(['error' => 'user does not have valid uid/gid']);
+			}
 		}
 
 		$node = $share->getNode();
@@ -152,7 +170,8 @@ class PageController extends Controller {
 		$descriptorspec = array(
 			0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
 			1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
-			2 => array("file", dirname($this->inputHack) . '/error_log.log', "a") // write logs here
+			//2 => array("file", dirname($this->inputHack) . '/error_log.log', "a") // write logs here
+			2 => array("pipe", "w") // error
 		);
 
 		$pipes = [];
@@ -164,6 +183,13 @@ class PageController extends Controller {
 
 		$result = stream_get_contents($pipes[1]);
 		fclose($pipes[1]);
+
+                //MD
+                $error = stream_get_contents($pipes[2]);
+                fclose($pipes[2]);
+                if ($error) {
+                        \OCP\Util::writeLog('files_nbviewer', 'Python ERROR: ' .$error, \OCP\Util::ERROR);
+                }
 
 		$returnValue = proc_close($process);
 		if($returnValue === 0) {
