@@ -12,6 +12,7 @@ class Mimetype {
 	private $updateDB;
 	private $aliases;
 	private $mapping;
+	private $config;
 	private $aliasesFile;
 	private $mappingFile;
 
@@ -19,6 +20,7 @@ class Mimetype {
 		$this->appName = $appName;
 		$this->aliasesFile = \OC::$SERVERROOT."/config/mimetypealiases.json";
 		$this->mappingFile = \OC::$SERVERROOT."/config/mimetypemapping.json";
+		$this->config = \OC::$server->getConfig();
 		$this->aliases = Array();
 		$this->mapping = Array();
 		$detector = \OC::$server->getMimeTypeDetector();
@@ -36,17 +38,16 @@ class Mimetype {
 	}
 
 	public function update() {
-		$lockFile = \OC::$SERVERROOT."/config/mimetypes.updating";
-		try {
-			touch($lockFile);
-			$this->updateJS();
-			$this->updateDB();
-			unlink($lockFile);
-		} catch (\Exception $e) {
-			if (file_exists($lockFile)) {
-				unlink($lockfile);
+		if ($this->config->getSystemValue('mimetypes.autoupdate.lock', '') === '') {
+			try {
+				$this->config->setSystemValue('mimetypes.autoupdate.lock', 'updating');
+				$this->updateJS();
+				$this->updateDB();
+				$this->config->setSystemValue('mimetypes.autoupdate.lock', '');
+			} catch (\Exception $e) {
+				$this->config->setSystemValue('mimetypes.autoupdate.lock', '');
+				throw $e;
 			}
-			throw $e;
 		}
 	}
 
@@ -54,14 +55,13 @@ class Mimetype {
 	 * Triggers an update of /core/js/mimetypes.json
 	 */
 	private function updateJS() {
-		// file has to be writeable by webserver, so using config directory
-		$lockFile = \OC::$SERVERROOT."/config/autoupdate.mimetypealiases.{$this->appName}.done";
+		$lockKey = "mimetypealiases.autoupdate.{$this->appName}";
 		if (count($this->aliases) > 0) {	
-			if (!file_exists($lockFile)) {
+			if ($this->config->getSystemValue($lockKey, '') === '') {
 				$aliases = $this->mergeJSON($this->aliasesFile, $this->aliases);
 				if ($aliases === false) {
 					$this->updateJS->run(new ArrayInput(Array()), new NullOutput());
-					touch($lockFile);
+					$this->config->setSystemValue($lockKey, 'complete');
 				}
 			}
 		}
@@ -72,14 +72,14 @@ class Mimetype {
 	 */
 	private function updateDB() {
 		// file has to be writeable by webserver, so using config directory
-		$lockFile = \OC::$SERVERROOT."/config/autoupdate.mimetypemapping.{$this->appName}.done"; 
+		$lockKey = "mimetypemapping.autoupdate.{$this->appName}";
 		
 		if (count($this->mapping) > 0) {
-			if (!file_exists($lockFile)) {
+			if ($this->config->getSystemValue($lockKey, '') === '') {
 				$mappings = $this->mergeJSON($this->mappingFile, $this->mapping);
 				if ($mappings === false) {
 					$this->updateDB->run(new ArrayInput(Array()), new NullOutput());
-					touch($lockFile);
+					$this->config->setSystemValue($lockKey, 'complete');
 				}
 			}
 		}
