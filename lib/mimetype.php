@@ -36,14 +36,24 @@ class Mimetype {
 	}
 
 	public function update() {
-		$this->updateJS();
-		$this->updateDB();
+		$lockFile = \OC::$SERVERROOT."/config/mimetypes.updating";
+		try {
+			touch($lockFile);
+			$this->updateJS();
+			$this->updateDB();
+			unlink($lockFile);
+		} catch (\Exception $e) {
+			if (file_exists($lockFile)) {
+				unlink($lockfile);
+			}
+			throw $e;
+		}
 	}
 
 	/**
 	 * Triggers an update of /core/js/mimetypes.json
 	 */
-	public function updateJS() {
+	private function updateJS() {
 		// file has to be writeable by webserver, so using config directory
 		$lockFile = \OC::$SERVERROOT."/config/autoupdate.mimetypealiases.{$this->appName}.done";
 		if (count($this->aliases) > 0) {	
@@ -60,7 +70,7 @@ class Mimetype {
 	/**
 	 * Triggers an update of mimetypes table in databases
 	 */
-	public function updateDB() {
+	private function updateDB() {
 		// file has to be writeable by webserver, so using config directory
 		$lockFile = \OC::$SERVERROOT."/config/autoupdate.mimetypemapping.{$this->appName}.done"; 
 		
@@ -76,12 +86,20 @@ class Mimetype {
 	}
 	
 	private function mergeJSON($file, $data=Array()) {
-		if (file_exists($file) && count($data) > 0) {
+		$mergedData = null;
+		if (file_exists($file)) {
 			$mergedData = json_decode(file_get_contents($file));
-		} else {
+		}
+		if (is_null($mergedData)) {
 			$mergedData = Array();
 		}
+		\OCP\Util::writeLog('swan', print_r($mergedData, true), \OCP\Util::DEBUG);
 		$mergedData = array_merge($mergedData, $data);
-		return file_put_contents($file, json_encode($mergedData, JSON_FORCE_OBJECT), LOCK_EX);
+		if (!is_null($mergedData) && !empty($mergedData)) {
+			$result = file_put_contents($file, json_encode($mergedData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), LOCK_EX);
+		} else {
+			$result = false;
+		}
+		return $result;
 	}
 }
