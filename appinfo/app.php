@@ -12,6 +12,7 @@
 namespace OCA\SwanViewer\AppInfo;
 
 use OCP\AppFramework\App;
+use \OCA\SwanViewer\Mimetype;
 
 require_once __DIR__ . '/autoload.php';
 
@@ -31,3 +32,8 @@ if (\OCP\Util::getVersion()[0] >= 10) {
 
 \OCP\Util::addScript('swanviewer', 'script');
 \OCP\Util::addStyle('swanviewer', 'style');
+
+$mime = new Mimetype('swanviewer');
+$mime->addAlias("application/pynb", "text/code");
+$mime->addMapping("ipynb", "application/pynb");
+$mime->update();
