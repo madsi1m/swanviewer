@@ -49,7 +49,7 @@
 			if(response.eosinfo) {
 				var info = response.eosinfo;
 				var eosPath = info['eos.file'];
-				var query = '?projurl=' + eosPath;
+				var query = '?projurl=file:/' + eosPath;
 				window.open(OCA.SwanViewer.swanUrl + query, '_blank');
 			} else {
 				closeFile(null);
@@ -193,6 +193,26 @@
 			OCA.Files.fileActions.register('application/pynb', 'Default View', OC.PERMISSION_READ, OC.imagePath('core', 'actions/play'), onView);
 
 			OCA.Files.fileActions.setDefault('application/pynb', 'Default View');
+
+			var inlineOpen = {
+				name: 'openinswaninline',
+				displayName: '',
+				mime: 'application/pynb',
+				order: 1000000,
+				// permission is READ because we show a hint instead if there is no permission
+				permissions: OC.PERMISSION_READ,
+				actionHandler: onOpen,
+				icon: OC.imagePath('core', 'actions/badge_swan_white_150'),
+				type: OCA.Files.FileActions.TYPE_INLINE,
+			};
+			OCA.Files.fileActions.registerAction(inlineOpen);
+			/*
+			var el = $(".action-openinswaninline");
+			var img = el.find('img');
+			img.css('max-width', 'none');
+			el.addClass('permanent');
+			el.css('opacity', '1')
+			*/
 		}
 		// Doesn't work with IE below 9
 		if(!$.browser.msie || ($.browser.msie && $.browser.version >= 9)){
