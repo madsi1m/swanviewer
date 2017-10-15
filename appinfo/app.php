@@ -19,7 +19,7 @@ require_once __DIR__ . '/autoload.php';
 $app = new App('swanviewer');
 $container = $app->getContainer();
 
-if (\OCP\Util::getVersion()[0] >= 10) {
+if (\OCP\Util::getVersion()[0] >= 9) {
 	$domains = \OC::$server->getConfig()->getSystemValue("cbox.swan.cspdomains", ['cdnjs.cloudflare.com', 'root.cern.ch']);
 	$policy = new \OCP\AppFramework\Http\EmptyContentSecurityPolicy();
 	foreach($domains as $domain) {
