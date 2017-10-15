@@ -104,7 +104,6 @@ class PageController extends Controller {
 		$descriptorspec = array(
 		   0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
 		   1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
-		   //MD 2 => array("file", dirname($this->inputHack) . '/error_log.log', "a") // write logs here
 		   2 => array("pipe", "w") // error
 		);
 
@@ -118,7 +117,6 @@ class PageController extends Controller {
 		$result = stream_get_contents($pipes[1]);
 		fclose($pipes[1]);
 
-		//MD
 		$error = stream_get_contents($pipes[2]);
 		fclose($pipes[2]);
 		if ($error) {
@@ -184,7 +182,6 @@ class PageController extends Controller {
 		$result = stream_get_contents($pipes[1]);
 		fclose($pipes[1]);
 
-                //MD
                 $error = stream_get_contents($pipes[2]);
                 fclose($pipes[2]);
                 if ($error) {
