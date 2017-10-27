@@ -77,7 +77,7 @@ class PageController extends Controller {
 		}
 
 		//set up tokens
-		$redis = new Redis();
+		$redis = new \Redis();
 		$redis->connect($this->redisHost, $this->redisPort);
 		$redis->auth($this->redisPassword);
 
