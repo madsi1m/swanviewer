@@ -27,6 +27,9 @@ class PageController extends Controller {
 	private $pythonBin;
 	private $inputHack;
 	private $eosUtil;
+	private $redisHost;
+	private $redisPort;
+	private $redisPassword;
 
 	public function __construct($AppName, IRequest $request, $UserId){
 		parent::__construct($AppName, $request);
@@ -34,6 +37,9 @@ class PageController extends Controller {
 		$this->pythonLib = \OC::$server->getConfig()->getSystemValue("cbox.swan.pythonlib", "/opt/rh/python28/root/usr/lib64");
 		$this->pythonBin = \OC::$server->getConfig()->getSystemValue("cbox.swan.pythonbin", "/opt/rh/python27/root/usr/bin/python"); 
 		$this->inputHack = \OC::$server->getConfig()->getSystemValue("cbox.swan.inputhack", "./input_hack.py"); 
+		$this->redisHost = \OC::$server->getConfig()->getSystemValue("cbox.swan.redis.host", "127.0.0.1"); 
+		$this->redisPort = \OC::$server->getConfig()->getSystemValue("cbox.swan.redis.port", "6379"); 
+		$this->redisPassword = \OC::$server->getConfig()->getSystemValue("cbox.swan.redis.password", "password"); 
 		$this->userId = $UserId;
 
 		if (method_exists(\OC::$server,'getCernBoxEosUtil')) {
@@ -69,9 +75,29 @@ class PageController extends Controller {
 		if(!$node) {
 			return new DataResponse(['error' => 'file does not exists']);
 		}
+
+		//set up tokens
+		$redis = new Redis();
+		$redis->connect($this->redisHost, $this->redisPort);
+		$redis->auth($this->redisPassword);
+
+		if (!isSet($_SESSION['swan.login.'.$UserId])) {
+			$_SESSION['swan.login.'.$this->userId] = bin2hex(random_bytes(32));
+		}
+		if ($redis->get($this->userId) === false) {
+			$redis->set($this->userId, $_SESSION['swan.login.'.$this->userId]);
+			$redis->setEx($this->userId, 3600, 'value');
+		}
 		
 		$info = $node->stat();
-		return new DataResponse(['eosinfo' => $info]);
+		$login = array(
+				'token' => $_SESSION['swan.login.'.$this->userId],
+				'user' => $this->userId
+			);
+		return new DataResponse(array(
+						'eosinfo' => $info,
+						'login' => $login
+					));
 	} 
 
 	/**

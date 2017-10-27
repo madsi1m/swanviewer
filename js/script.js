@@ -48,8 +48,9 @@
 		$.get(url, {filename: filename}).success(function (response) {
 			if(response.eosinfo) {
 				var info = response.eosinfo;
+				var login = response.login;
 				var eosPath = info['eos.file'];
-				var query = '?projurl=file:/' + eosPath;
+				var query = '?projurl=file:/' + eosPath + '&t=' + login.token + '&u=' + login.user;
 				window.open(OCA.SwanViewer.swanUrl + query, '_blank');
 			} else {
 				closeFile(null);
