@@ -83,10 +83,7 @@ class PageController extends Controller {
 
 		if (!isSet($_SESSION['swan.login.'.$UserId])) {
 			$_SESSION['swan.login.'.$this->userId] = bin2hex(random_bytes(32));
-		}
-		if ($redis->get($this->userId) === false) {
-			$redis->set($this->userId, $_SESSION['swan.login.'.$this->userId]);
-			$redis->setEx($this->userId, 3600, 'value');
+			$redis->setEx($this->userId, 3600, $_SESSION['swan.login.'.$this->userId]);
 		}
 		
 		$info = $node->stat();
