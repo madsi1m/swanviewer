@@ -233,3 +233,13 @@
 	});
 
 })(jQuery, OC, OCA);
+
+// Move swan to the left
+$(document).ajaxComplete(function() {
+	$('.fileactions').each(function() {
+		if (!$(this).first().hasClass('action-openinswaninline')) {
+			$(this).find("[class*='action-openinswaninline']").prependTo(this);
+		}
+	});
+});
+
