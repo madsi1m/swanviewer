@@ -45,13 +45,16 @@
 	var onOpen =  function (filename, data) {
 		url = OC.generateUrl('/apps/swanviewer/eosinfo');
 		filename = data.dir + "/" + filename;
+		setUpEditor();
 		$.get(url, {filename: filename}).success(function (response) {
 			if(response.eosinfo) {
+				$('#nbviewer-loader').remove();
 				var info = response.eosinfo;
 				var login = response.login;
 				var eosPath = info['eos.file'];
 				var query = '?projurl=file:/' + eosPath + '&t=' + login.token + '&u=' + login.user;
-				window.open(OCA.SwanViewer.swanUrl + query, '_blank');
+				$('#nbviewer-frame').attr('src', OCA.SwanViewer.swanUrl + query);
+				//window.open(OCA.SwanViewer.swanUrl + query, '_blank');
 			} else {
 				closeFile(null);
 				OC.dialogs.alert("Error: Could not get info from eos", "Error");

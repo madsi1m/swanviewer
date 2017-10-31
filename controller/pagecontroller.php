@@ -81,14 +81,18 @@ class PageController extends Controller {
 		$redis->connect($this->redisHost, $this->redisPort);
 		$redis->auth($this->redisPassword);
 
-		if (!isSet($_SESSION['swan.login.'.$UserId])) {
-			$_SESSION['swan.login.'.$this->userId] = bin2hex(random_bytes(32));
-			$redis->setEx($this->userId, 3600, $_SESSION['swan.login.'.$this->userId]);
+		if ($redis->get($this->userId) === false) {
+			$redis->setEx($this->userId, 3600000, bin2hex(random_bytes(32)));
 		}
 		
 		$info = $node->stat();
+		if (!isSet($info['eos.file'])) {
+			$info['eos.file'] = substr(str_replace('//','/',$filename),1);
+		}
+		error_log('MD ------->'.print_r($info,true));
+
 		$login = array(
-				'token' => $_SESSION['swan.login.'.$this->userId],
+				'token' => $redis->get($this->userId),
 				'user' => $this->userId
 			);
 		return new DataResponse(array(
