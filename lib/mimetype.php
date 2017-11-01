@@ -88,7 +88,7 @@ class Mimetype {
 	private function mergeJSON($file, $data=Array()) {
 		$mergedData = null;
 		if (file_exists($file)) {
-			$mergedData = json_decode(file_get_contents($file));
+			$mergedData = json_decode(file_get_contents($file),true);
 		}
 		if (is_null($mergedData)) {
 			$mergedData = Array();
