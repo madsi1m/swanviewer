@@ -59,7 +59,7 @@ class Mimetype {
 		if (count($this->aliases) > 0) {	
 			if ($this->config->getSystemValue($lockKey, '') === '') {
 				$aliases = $this->mergeJSON($this->aliasesFile, $this->aliases);
-				if ($aliases === false) {
+				if ($aliases !== false) {
 					$this->updateJS->run(new ArrayInput(Array()), new NullOutput());
 					$this->config->setSystemValue($lockKey, 'complete');
 				}
@@ -77,7 +77,8 @@ class Mimetype {
 		if (count($this->mapping) > 0) {
 			if ($this->config->getSystemValue($lockKey, '') === '') {
 				$mappings = $this->mergeJSON($this->mappingFile, $this->mapping);
-				if ($mappings === false) {
+
+				if ($mappings !== false) {
 					$this->updateDB->run(new ArrayInput(Array()), new NullOutput());
 					$this->config->setSystemValue($lockKey, 'complete');
 				}
