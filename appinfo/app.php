@@ -34,6 +34,6 @@ if (\OCP\Util::getVersion()[0] >= 9) {
 \OCP\Util::addStyle('swanviewer', 'style');
 
 $mime = new Mimetype('swanviewer');
-$mime->addAlias("application/pynb", "text/code");
+$mime->addAlias("application/pynb", "pynb");
 $mime->addMapping("ipynb", "application/pynb");
 $mime->update();
